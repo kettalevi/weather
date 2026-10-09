@@ -45,6 +45,7 @@ final class WeatherService
             'longitude' => $lon,
             'current'   => 'temperature_2m,apparent_temperature,relative_humidity_2m,'
                          . 'weather_code,wind_speed_10m,is_day',
+            'hourly'    => 'temperature_2m,precipitation_probability,precipitation,weather_code,is_day',
             'daily'     => 'weather_code,temperature_2m_max,temperature_2m_min,'
                          . 'precipitation_probability_max,sunrise,sunset',
             'timezone'  => 'auto',
@@ -52,6 +53,40 @@ final class WeatherService
             'temperature_unit' => $imperial ? 'fahrenheit' : 'celsius',
             'wind_speed_unit'  => $imperial ? 'mph' : 'kmh',
         ], $this->cacheTtl);
+    }
+
+    /**
+     * Next $hours entries of the hourly forecast, starting at the current local hour.
+     * Open-Meteo returns local times (timezone=auto), so plain string comparison works.
+     *
+     * @param array<string,mixed> $weather result of forecast()
+     * @return list<array{time:string,temp:float,pop:int,rain:float,code:int,day:bool}>
+     */
+    public static function nextHours(array $weather, int $hours = 24): array
+    {
+        $h = $weather['hourly'] ?? null;
+        if (!is_array($h) || empty($h['time'])) {
+            return [];
+        }
+        $now = substr((string) ($weather['current']['time'] ?? ''), 0, 13) . ':00';
+        $out = [];
+        foreach ($h['time'] as $i => $t) {
+            if ($t < $now) {
+                continue;
+            }
+            $out[] = [
+                'time' => (string) $t,
+                'temp' => (float) ($h['temperature_2m'][$i] ?? 0),
+                'pop'  => (int) ($h['precipitation_probability'][$i] ?? 0),
+                'rain' => (float) ($h['precipitation'][$i] ?? 0),
+                'code' => (int) ($h['weather_code'][$i] ?? 0),
+                'day'  => (bool) ($h['is_day'][$i] ?? 1),
+            ];
+            if (count($out) >= $hours) {
+                break;
+            }
+        }
+        return $out;
     }
 
     /** @return array{0:string,1:string} [description, emoji] */

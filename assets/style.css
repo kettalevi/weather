@@ -21,3 +21,22 @@ section { background:var(--card); border-radius:14px; padding:20px; margin-botto
 .day { display:flex; flex-direction:column; align-items:center; gap:4px; padding:10px 4px; border-radius:10px; background:#8881; }
 footer { text-align:center; color:var(--muted); font-size:.85rem; margin-top:24px; }
 footer a { color:var(--accent); }
+
+button.secondary { background:var(--card); color:var(--text); border:1px solid #8884; }
+button:disabled { opacity:.6; cursor:wait; }
+.recent { display:flex; flex-wrap:wrap; gap:8px; margin:-8px 0 16px; font-size:.9rem; }
+.recent a { padding:4px 12px; border-radius:999px; background:var(--card); color:var(--text); text-decoration:none; box-shadow:0 1px 3px #0001; }
+.recent a.clear { background:none; box-shadow:none; color:var(--muted); }
+.hourly h3, .forecast h3 { margin:0 0 10px; }
+.hourly h3 + .strip + h3 { margin-top:18px; }
+.strip { display:flex; gap:6px; overflow-x:auto; padding-bottom:8px; }
+.hour { flex:0 0 58px; display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 0; border-radius:10px; background:#8881; }
+.hour .icon { font-size:1.4em; }
+.rainchart { width:100%; height:auto; display:block; --bar:#2f7de1; }
+@media (prefers-color-scheme: dark) { .rainchart { --bar:#5aa2ff; } }
+.rainchart .grid { stroke:var(--muted); stroke-opacity:.25; stroke-width:1; }
+.rainchart .axis { fill:var(--muted); font-size:11px; }
+.rainchart .fill { fill:var(--bar); }
+.rainchart .hit { fill:transparent; }
+.rainchart .bar:hover .fill { fill-opacity:.75; }
+.rainchart .bar:hover .hit { fill:var(--muted); fill-opacity:.12; }
